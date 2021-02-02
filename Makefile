@@ -274,7 +274,7 @@ format: pre-format
 	cargo fmt
 
 doc:
-	@cargo doc --workspace --document-private-items \
+	@cargo doc --workspace --document-private-items --no-deps \
 		--exclude fuzz-targets --exclude fuzzer-honggfuzz --exclude fuzzer-afl --exclude fuzzer-libfuzzer \
 		--no-default-features --features "${ENABLE_FEATURES}"
 
