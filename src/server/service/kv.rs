@@ -43,6 +43,7 @@ use tikv_util::future::{paired_future_callback, poll_future_notify};
 use tikv_util::mpsc::batch::{unbounded, BatchCollector, BatchReceiver, Sender};
 use tikv_util::worker::Scheduler;
 use txn_types::{self, Key};
+use backtrace::Backtrace;
 
 const GRPC_MSG_MAX_BATCH_SIZE: usize = 128;
 const GRPC_MSG_NOTIFY_SIZE: usize = 8;
@@ -1293,6 +1294,7 @@ fn future_raw_get<E: Engine, L: LockManager>(
     storage: &Storage<E, L>,
     mut req: RawGetRequest,
 ) -> impl Future<Output = ServerResult<RawGetResponse>> {
+    info!("spock"; "backtrace" => ?Backtrace::new());
     let v = storage.raw_get(req.take_context(), req.take_cf(), req.take_key());
 
     async move {
@@ -1334,6 +1336,7 @@ fn future_raw_put<E: Engine, L: LockManager>(
     storage: &Storage<E, L>,
     mut req: RawPutRequest,
 ) -> impl Future<Output = ServerResult<RawPutResponse>> {
+    info!("future_raw_put"; "backtrace" => ?Backtrace::new());
     let (cb, f) = paired_future_callback();
     let res = storage.raw_put(
         req.take_context(),

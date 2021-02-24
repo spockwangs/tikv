@@ -74,6 +74,7 @@ use crate::store::{
 use crate::Result;
 use concurrency_manager::ConcurrencyManager;
 use tikv_util::future::poll_future_notify;
+use backtrace::Backtrace;
 
 type Key = Vec<u8>;
 
@@ -246,6 +247,7 @@ where
         &self,
         cmd: RaftCommand<EK::Snapshot>,
     ) -> std::result::Result<(), TrySendError<RaftCommand<EK::Snapshot>>> {
+        info!("send_raft_command"; "backtrace" => ?Backtrace::new());
         let region_id = cmd.request.get_header().get_region_id();
         match self.send(region_id, PeerMsg::RaftCommand(cmd)) {
             Ok(()) => Ok(()),

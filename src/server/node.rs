@@ -27,6 +27,7 @@ use raftstore::store::{self, initial_region, Config as StoreConfig, SnapManager,
 use raftstore::store::{GlobalReplicationState, PdTask, SplitCheckTask};
 use tikv_util::config::VersionTrack;
 use tikv_util::worker::{FutureWorker, Scheduler, Worker};
+use backtrace::Backtrace;
 
 const MAX_CHECK_CLUSTER_BOOTSTRAPPED_RETRY_COUNT: u64 = 60;
 const CHECK_CLUSTER_BOOTSTRAPPED_RETRY_SECONDS: u64 = 3;
@@ -310,6 +311,7 @@ where
         engines: &Engines<RocksEngine, ER>,
         first_region: metapb::Region,
     ) -> Result<()> {
+        info!("bootstrap_cluster"; "backtrace" => ?Backtrace::new());
         let region_id = first_region.get_id();
         let mut retry = 0;
         while retry < MAX_CHECK_CLUSTER_BOOTSTRAPPED_RETRY_COUNT {

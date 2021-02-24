@@ -9,6 +9,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use tikv_util::lru::LruCache;
 use tikv_util::Either;
+use backtrace::Backtrace;
 
 enum CheckDoResult<T> {
     NotExist,
@@ -201,6 +202,7 @@ where
     /// Send the message to specified address.
     #[inline]
     pub fn send(&self, addr: u64, msg: N::Message) -> Result<(), TrySendError<N::Message>> {
+        info!("send"; "backtrace" => ?Backtrace::new());
         match self.try_send(addr, msg) {
             Either::Left(res) => res,
             Either::Right(m) => Err(TrySendError::Disconnected(m)),

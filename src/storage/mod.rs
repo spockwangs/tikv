@@ -84,6 +84,7 @@ use std::{
 use tikv_util::time::Instant;
 use tikv_util::time::ThreadReadId;
 use txn_types::{Key, KvPair, Lock, TimeStamp, TsSet, Value};
+use backtrace::Backtrace;
 
 pub type Result<T> = std::result::Result<T, Error>;
 pub type Callback<T> = Box<dyn FnOnce(Result<T>) + Send>;
@@ -1004,7 +1005,10 @@ impl<E: Engine, L: LockManager> Storage<E, L> {
                 Key::from_encoded(key),
                 value,
             )]),
-            Box::new(|(_, res): (_, kv::Result<_>)| callback(res.map_err(Error::from))),
+            Box::new(|(_, res): (_, kv::Result<_>)| {
+                info!("raw_put"; "backtrace" => ?Backtrace::new());
+                callback(res.map_err(Error::from))
+            }),
         )?;
         KV_COMMAND_COUNTER_VEC_STATIC.raw_put.inc();
         Ok(())

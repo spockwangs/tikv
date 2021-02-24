@@ -48,6 +48,7 @@ use raftstore::{
 };
 use raftstore::{coprocessor::ReadIndexObserver, errors::Error as RaftServerError};
 use tikv_util::time::Instant;
+use backtrace::Backtrace;
 
 quick_error! {
     #[derive(Debug)]
@@ -224,6 +225,7 @@ where
         req: Request,
         cb: Callback<CmdRes>,
     ) -> Result<()> {
+        info!("spock"; "backtrace" => ?Backtrace::new());
         let header = self.new_request_header(&*ctx.pb_ctx);
         let mut cmd = RaftCmdRequest::default();
         cmd.set_header(header);
@@ -249,6 +251,7 @@ where
         proposed_cb: Option<ExtCallback>,
         committed_cb: Option<ExtCallback>,
     ) -> Result<()> {
+        info!("exec_write_requests");
         #[cfg(feature = "failpoints")]
         {
             // If rid is some, only the specified region reports error.

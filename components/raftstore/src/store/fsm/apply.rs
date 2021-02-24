@@ -2101,6 +2101,7 @@ where
             new_split_regions.insert(
                 new_region.get_id(),
                 NewSplitPeer {
+                    // 分裂产生的Region一定与原Region在同一个Store上吗？
                     peer_id: util::find_peer(&new_region, ctx.store_id).unwrap().get_id(),
                     result: None,
                 },

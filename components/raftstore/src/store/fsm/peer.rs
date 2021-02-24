@@ -61,6 +61,7 @@ use crate::store::{
 };
 use crate::{Error, Result};
 use keys::{self, enc_end_key, enc_start_key};
+use backtrace::Backtrace;
 
 const REGION_SPLIT_SKIP_MAX_COUNT: usize = 3;
 
@@ -185,6 +186,7 @@ where
             "create peer";
             "region_id" => region.get_id(),
             "peer_id" => meta_peer.get_id(),
+            "backtrace" => ?Backtrace::new(),
         );
         let (tx, rx) = mpsc::loose_bounded(cfg.notify_capacity);
         Ok((
