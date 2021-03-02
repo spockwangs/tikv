@@ -225,7 +225,6 @@ where
         req: Request,
         cb: Callback<CmdRes>,
     ) -> Result<()> {
-        info!("spock"; "backtrace" => ?Backtrace::new());
         let header = self.new_request_header(&*ctx.pb_ctx);
         let mut cmd = RaftCmdRequest::default();
         cmd.set_header(header);

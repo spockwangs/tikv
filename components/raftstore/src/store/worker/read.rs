@@ -522,7 +522,6 @@ where
                 };
                 // Leader can read local if and only if it is in lease.
                 if delegate.is_in_leader_lease(snapshot_ts, &mut self.metrics) {
-                    info!("here1");
                     // Cache snapshot_time for remaining requests in the same batch.
                     let mut response = self.execute(&req, &delegate.region, None, read_id);
                     cmd_resp::bind_term(&mut response.response, delegate.term);
@@ -532,7 +531,6 @@ where
                     response.txn_extra_op = delegate.txn_extra_op.load();
                     cb.invoke_read(response);
                 } else {
-                    info!("here2");
                     // Forward to raftstore.
                     self.redirect(RaftCommand::new(req, cb));
                 }

@@ -1006,7 +1006,6 @@ impl<E: Engine, L: LockManager> Storage<E, L> {
                 value,
             )]),
             Box::new(|(_, res): (_, kv::Result<_>)| {
-                info!("raw_put"; "backtrace" => ?Backtrace::new());
                 callback(res.map_err(Error::from))
             }),
         )?;

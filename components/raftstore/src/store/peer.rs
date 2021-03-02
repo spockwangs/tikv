@@ -1768,7 +1768,6 @@ where
             "{} is applying snapshot when it is ready to handle committed entries",
             self.tag
         );
-        info!("handle_raft_committed_entries"; "backtrace" => ?Backtrace::new());
         if !committed_entries.is_empty() {
             // We must renew current_time because this value may be created a long time ago.
             // If we do not renew it, this time may be smaller than propose_time of a command,
@@ -2175,7 +2174,6 @@ where
         req: RaftCmdRequest,
         mut err_resp: RaftCmdResponse,
     ) -> bool {
-        info!("propose"; "backtrace" => ?Backtrace::new());
         if self.pending_remove {
             return false;
         }
@@ -2547,7 +2545,6 @@ where
         mut err_resp: RaftCmdResponse,
         cb: Callback<EK::Snapshot>,
     ) -> bool {
-        info!("read_index"; "backtrace" => ?Backtrace::new());
         if let Err(e) = self.pre_read_index() {
             debug!(
                 "prevents unsafe read index";

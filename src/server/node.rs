@@ -311,7 +311,6 @@ where
         engines: &Engines<RocksEngine, ER>,
         first_region: metapb::Region,
     ) -> Result<()> {
-        info!("bootstrap_cluster"; "backtrace" => ?Backtrace::new());
         let region_id = first_region.get_id();
         let mut retry = 0;
         while retry < MAX_CHECK_CLUSTER_BOOTSTRAPPED_RETRY_COUNT {
