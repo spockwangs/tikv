@@ -140,6 +140,7 @@ pub struct ReadDelegate {
     peer_id: u64,
     term: u64,
     applied_index_term: u64,
+    // 主节点的租约。只有主节点才有，非主节点是None.
     leader_lease: Option<RemoteLease>,
     last_valid_ts: Timespec,
 

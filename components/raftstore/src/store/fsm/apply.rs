@@ -433,6 +433,7 @@ where
     ///
     /// This call is valid only when it's between a `prepare_for` and `finish_for`.
     pub fn commit(&mut self, delegate: &mut ApplyDelegate<EK>) {
+        // 更新RaftApplyState，与其对应的entry存入同一个WriteBatch中，保证原子写入RocksDB.
         if self.last_applied_index < delegate.apply_state.get_applied_index() {
             delegate.write_apply_state(self.kv_wb_mut());
         }
@@ -920,6 +921,7 @@ where
         if !data.is_empty() {
             let cmd = util::parse_data_at(data, index, &self.tag);
 
+            // 有些命令要求KV处于最新状态，所以必须把之前的entry全部apply到KV中。
             if should_write_to_engine(&cmd) || apply_ctx.kv_wb().should_write_to_engine() {
                 apply_ctx.commit(self);
                 if let Some(start) = self.handle_start.as_ref() {
@@ -2087,9 +2089,11 @@ where
         for req in split_reqs.get_requests() {
             let mut new_region = Region::default();
             new_region.set_id(req.get_new_region_id());
+            // 新的region的epoch来自旧的。
             new_region.set_region_epoch(derived.get_region_epoch().to_owned());
             new_region.set_start_key(keys.pop_front().unwrap());
             new_region.set_end_key(keys.front().unwrap().to_vec());
+            // 新region的peers与原region在相同的store上，只是peer_id不相同。
             new_region.set_peers(derived.get_peers().to_vec().into());
             for (peer, peer_id) in new_region
                 .mut_peers()
@@ -2173,6 +2177,7 @@ where
 
         let kv_wb_mut = ctx.kv_wb_mut();
         for new_region in &regions {
+            // 忽略原region
             if new_region.get_id() == derived.get_id() {
                 continue;
             }

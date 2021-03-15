@@ -1134,7 +1134,7 @@ where
         );
 
         let mut snap_data = RaftSnapshotData::default();
-        snap_data.merge_from_bytes(snap.get_data())?;
+        –.merge_from_bytes(snap.get_data())?;
 
         let region_id = self.get_region_id();
 
