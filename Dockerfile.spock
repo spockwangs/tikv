@@ -1,0 +1,17 @@
+FROM ubuntu:spock as builder
+
+# Install Rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --no-modify-path --default-toolchain none -y
+ENV PATH /root/.cargo/bin/:$PATH
+
+WORKDIR /tikv
+COPY . .
+RUN rustup self update \
+    && rustup set profile minimal \
+    && rustup default $(cat "rust-toolchain")
+
+RUN make build
+
+FROM ubuntu:latest
+COPY --from=builder /tikv/target/debug/tikv-server /tikv-server
+ENTRYPOINT ["/tikv-server"]

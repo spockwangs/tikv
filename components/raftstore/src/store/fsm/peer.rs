@@ -2220,10 +2220,12 @@ where
             }
         }
 
+        // 删除原region的key range
         let last_key = enc_end_key(regions.last().unwrap());
         if meta.region_ranges.remove(&last_key).is_none() {
             panic!("{} original region should exist", self.fsm.peer.tag);
         }
+        // 更新分裂的region的信息。
         let last_region_id = regions.last().unwrap().get_id();
         for new_region in regions {
             let new_region_id = new_region.get_id();
@@ -2313,6 +2315,7 @@ where
             // New peer derive write flow from parent region,
             // this will be used by balance write flow.
             new_peer.peer.peer_stat = self.fsm.peer.peer_stat.clone();
+            // 如果本节点是leader，则立即开始选举。
             let campaigned = new_peer.peer.maybe_campaign(is_leader);
             new_peer.has_ready |= campaigned;
 
@@ -2336,6 +2339,7 @@ where
             if last_region_id == new_region_id {
                 // To prevent from big region, the right region needs run split
                 // check again after split.
+                // 为什么最后一个region有可能变得很大呢？
                 new_peer.peer.size_diff_hint = self.ctx.cfg.region_split_check_diff.0;
             }
             let mailbox = BasicMailbox::new(sender, new_peer);
