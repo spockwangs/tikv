@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "..\\rust-rocksdb"
+		},
+		{
+			"path": "..\\client-go"
+		},
+		{
+			"path": "..\\kvproto"
+		}
+	],
+	"settings": {}
+}

@@ -153,7 +153,10 @@ pub struct ReadDelegate {
 
 #[derive(Debug)]
 struct TrackVer {
+    // 每当Peer更新数据时增加此版本号，以此来判断ReadDelegate的状态是否是最新的。如果已经过时了，则从存储引擎中加载最新状态。
     version: Arc<AtomicU64>,
+    // ReadDelegate有一个权威版本和若干个只读副本。副本只能从权威版本复制而来。每当复制时`local_ver`设置为`version`。
+    // 在复制后如果ReadDelegate状态有变化，则`version`加1，比`local_ver`更大，以此来判断是否有更新。
     local_ver: u64,
     // source set to `true` means the `TrackVer` is created by `TrackVer::new` instead
     // of `TrackVer::clone`, more specific, only the `ReadDelegate` created by `ReadDelegate::new`
