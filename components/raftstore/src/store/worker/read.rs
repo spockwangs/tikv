@@ -525,6 +525,8 @@ where
                     None => monotonic_raw_now(),
                 };
                 // Leader can read local if and only if it is in lease.
+                // 如果正在apply snapshot则一定不是主节点，因为1）只有从节点才会收到snapshot；
+                // 2）如果收到snapshot后leader失联了选举超时了该节点也不会竞选主节点。
                 if delegate.is_in_leader_lease(snapshot_ts, &mut self.metrics) {
                     // Cache snapshot_time for remaining requests in the same batch.
                     let mut response = self.execute(&req, &delegate.region, None, read_id);

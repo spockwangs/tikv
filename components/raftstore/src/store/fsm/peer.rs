@@ -1028,6 +1028,7 @@ where
         // When having pending snapshot, if election timeout is met, it can't pass
         // the pending conf change check because first index has been updated to
         // a value that is larger than last index.
+        // 如果正在apply snapshot则不参与选举。
         if self.fsm.peer.is_applying_snapshot() || self.fsm.peer.has_pending_snapshot() {
             // need to check if snapshot is applied.
             self.fsm.has_ready = true;
